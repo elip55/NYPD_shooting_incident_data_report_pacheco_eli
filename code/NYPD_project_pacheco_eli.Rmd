@@ -1,0 +1,109 @@
+---
+title: "NYPD_project_pacheco_eli"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-10-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ADDED STEP:  Import Libraries
+```{r library, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(lubridate)
+```
+
+
+## STEP 1: Start an Rmd document that describes and imports the shooting project dataset in a reproducible manner.
+
+Using a simple url_in method i will import data and assign a variable that is reproducible.
+
+```{r import_data, message=FALSE}
+url_in = "https://data.cityofnewyork.us/api/views/833y-fsy8/rows.csv?accessType=DOWNLOAD"
+data_set = read_csv(url_in)
+```
+
+## STEP 2: Tidy and Transform Your Data
+There are a number of columns i will not be needing for my assessment, thus, i will remove them and tidy my data.
+
+```{r}
+data_set2 = data_set %>% 
+  select(-c(INCIDENT_KEY,PRECINCT, JURISDICTION_CODE, LOC_CLASSFCTN_DESC, LOC_OF_OCCUR_DESC, LOCATION_DESC, X_COORD_CD, Y_COORD_CD, Longitude, Latitude, Lon_Lat))
+print(data_set2)
+summary(data_set2)
+```
+In this figure, the columns not needed have been taken out of the final data set.
+
+
+## STEP 3: Add Visualizations and Analysis
+The first question I have is:  *Which neighborhoods are the most dangerous over the course of time.*
+I will make a basic bar graph to illustrate this.
+
+The second question is: *At what time of the day these tend to occur.*
+I will make a frequency chart to display that data.
+
+The final question I have is:  *Which days are most likely to have an occurence.*
+This will be displayed in a basic bar graph.
+
+These three inquiries will be useful for anyone wanting to visit these neighborhoods. 
+
+```{r}
+graph1 = ggplot(data_set2, aes(x = BORO)) +
+  geom_bar() +
+  labs(title = "Boroughs of New York City with shooting stats",
+       x = "Boroughs of New York City",
+       y = "Count of Incidents") +
+  theme_minimal()
+graph1
+
+ggplot(data = data_set2, aes(x = OCCUR_TIME)) +
+  geom_freqpoly(bins = 50)+
+  labs(title = "Peak Dangerous Times",
+       x = "Time of Occurrence")
+
+data_set2$OCCUR_DAY = mdy(data_set2$OCCUR_DATE)
+data_set2$OCCUR_DAY = wday(data_set2$OCCUR_DAY, label = TRUE)
+data_set2$OCCUR_HOUR = hour(hms(as.character(data_set2$OCCUR_TIME)))
+
+x1 = data_set2 %>%
+  group_by(OCCUR_DAY) %>%
+  count()
+
+g <- ggplot(x1, aes(x = OCCUR_DAY, y = n)) +
+  geom_col() +
+  labs(title = "Most likely days of Occurrences",
+       x = "Incident Occurence Day",
+       y = "Count of Incidents") +
+  theme_minimal()
+g
+
+```
+```{r}
+g <- ggplot(df_4, aes(x = OCCUR_HOUR, y = n)) +
+  geom_line() +
+  labs(title = "Which time should people in New York be cautious of incidents?",
+       x = "Incident Occurence Hour",
+       y = "Count of Incidents") +
+  theme_minimal()
+```
+
+*CONCLUSION FROM STEP 3*
+Conclusion 1:  Brooklyn and the Bronx are most likely areas of shootings, with Staten Island being least likely.
+Conclusion 2:  Time of occurrences spike during the evening/nights.
+Conclusion 3:  Occurrences spike during this weekends. 
+
+This information can be very helpful for anyone looking to visit these neighborhoods.  This can be used in a number of modern tourism applications. 
+Ensuring some level of safety is important when touring any new city/neighborhood. 
+
+## Step 4 Add Bias Identification
+
+Data used in this report was collected from the City of New York.  Collection methods by the Police Department may be an inherit bias.  A helpful statistic would be knowing the amount of police force in each neighborhood during these times to correlate any ties to surge police activity and police reports.  
+It must also be noted that I have visited these neighborhoods many times in my life, and have formulated opinions on each neighborhood already.  In order to mitigate this, I created a simple bar graph to show each neighborhood statistically, rather than push my own bias further. 
+
+
+
+
