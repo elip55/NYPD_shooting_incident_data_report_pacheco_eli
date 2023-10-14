@@ -82,14 +82,7 @@ g <- ggplot(x1, aes(x = OCCUR_DAY, y = n)) +
 g
 
 ```
-```{r}
-g <- ggplot(df_4, aes(x = OCCUR_HOUR, y = n)) +
-  geom_line() +
-  labs(title = "Which time should people in New York be cautious of incidents?",
-       x = "Incident Occurence Hour",
-       y = "Count of Incidents") +
-  theme_minimal()
-```
+
 
 *CONCLUSION FROM STEP 3*
 Conclusion 1:  Brooklyn and the Bronx are most likely areas of shootings, with Staten Island being least likely.
